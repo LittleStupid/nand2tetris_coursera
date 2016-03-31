@@ -25,7 +25,6 @@
 // if (no == 1) set out = !out   // bitwise not
 // if (out == 0) set zr = 1
 // if (out < 0) set ng = 1
-
 CHIP ALU {
     IN  
         x[16], y[16],  // 16-bit inputs        
@@ -57,14 +56,15 @@ CHIP ALU {
    
    Not16( in=rslt, out=notrslt );
    Mux16( a=rslt, b=notrslt, sel=no, out=out );
-   Mux16( a=rslt, b=notrslt, sel=no, out=truerslt );
    
+   Mux16( a=rslt, b=notrslt, sel=no, out[15]=rsltsign );
+   Mux16( a=rslt, b=notrslt, sel=no, out[0..7]=highrslt, out[8..15]=lowrslt );
    
-   Or( a=false, b=false, out=isneg );
-   //Mux( a=false, b=true, sel=isneg, out=ng );
+   Or( a=rsltsign, b=false, out=isneg );
+   Mux( a=false, b=true, sel=isneg, out=ng );
    
-   //Or8Way( in=truerslt[0..7], out=lowz );
-   //Or8Way( in=truerslt[8..15], out=highz );
-   //Or( a=lowz, b=highz, out=iszero );
-   //Mux( a=false, b=true, sel=iszero, out=zr);
+   Or8Way( in=lowrslt, out=lowz );
+   Or8Way( in=highrslt, out=highz );
+   Or( a=lowz, b=highz, out=iszero );
+   Not( in=iszero, out=zr );
 }

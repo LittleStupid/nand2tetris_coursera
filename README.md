@@ -1,1 +1,1 @@
-http://nand2tetris.org
+Homework of the course: https://www.coursera.org/learn/build-a-computer
